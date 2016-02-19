@@ -14,9 +14,9 @@ public class CharacterMovement : MonoBehaviour {
 	private Vector3 currentRotation;
 	private float gravityY;
 
-	public float rotationStep = 10f;
+	private float rotationStep = 10f;
 
-	public bool cameraUpsideDown = false;
+	private bool cameraUpsideDown = false;
 
 	// Use this for initialization
 	void Start () {
@@ -30,6 +30,8 @@ public class CharacterMovement : MonoBehaviour {
 			isOnGround = false;
 		} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
 					Input.GetKeyDown (KeyCode.RightShift)) && isOnGround) {
+			// flip the character to the default layer so that it won't collide with any of the
+			// black or white tiles
 			gameObject.layer = 0;
 			gravityY = Physics2D.gravity.y;
 			Physics2D.gravity = new Vector2 (0, 0);
@@ -42,6 +44,18 @@ public class CharacterMovement : MonoBehaviour {
 	void OnCollisionStay2D(Collision2D other) {
 		if(other.gameObject.tag == "Ground") {
 			isOnGround = true;
+		}
+	}
+
+	void OnCollisionEnter2D(Collision2D other) {
+		if(other.gameObject.tag == "Deadly") {
+			Destroy (gameObject);
+		}
+	}
+
+	void OnCollisionExit2D(Collision2D other) {
+		if(other.gameObject.tag == "Ground") {
+			isOnGround = false;
 		}
 	}
 
@@ -64,10 +78,13 @@ public class CharacterMovement : MonoBehaviour {
 		currentCameraRotation.z += cameraUpsideDown ? (-1.0f * rotationStep) : rotationStep;
 		currentRotation.x += cameraUpsideDown ? (-1.0f * rotationStep) : rotationStep;
 		currentRotation.y += cameraUpsideDown ? (-1.0f * rotationStep) : rotationStep;
-		Debug.Log ("Current rotation is: " + currentCameraRotation.z);
+
 		camera.transform.eulerAngles = currentCameraRotation;
 		gameObject.transform.eulerAngles = currentRotation;
 		yield return new WaitForSeconds (0);
+
+		// If we aren't done rotating, start the coroutine again
+		// Otherwise, flip the respective variables to show the new state the game is in
 		if ((!cameraUpsideDown && currentCameraRotation.z < targetCameraRotation.z) ||
 			(cameraUpsideDown && currentCameraRotation.z > targetCameraRotation.z)) {
 			StartCoroutine (shiftRotationAnimation ());
