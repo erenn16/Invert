@@ -26,7 +26,7 @@ public class CharacterMovement : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if (Input.GetKeyDown (KeyCode.Space) && isOnGround) {
-			rb.AddForce (new Vector2 (0, 400));
+			rb.AddForce (cameraUpsideDown ? new Vector2 (0, -400) : new Vector2 (0, 400));
 			isOnGround = false;
 		} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
 					Input.GetKeyDown (KeyCode.RightShift)) && isOnGround) {
