@@ -7,6 +7,7 @@ public class CharacterMovement : MonoBehaviour {
 	private float speed = 5.0f;
 	private Rigidbody2D rb;
 	private bool isOnGround = false;
+	private bool canShift = false;
 
 	private Vector3 targetCameraRotation = new Vector3(0,0,0);
 	private Vector3 currentCameraRotation;
@@ -17,45 +18,69 @@ public class CharacterMovement : MonoBehaviour {
 	private float rotationStep = 10f;
 
 	private bool cameraUpsideDown = false;
+	private ParticleSystem particles;
+	private bool isDead = false;
 
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody2D> ();
+		particles = GetComponentInChildren<ParticleSystem> ();
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown (KeyCode.Space) && isOnGround) {
-			rb.AddForce (cameraUpsideDown ? new Vector2 (0, -400) : new Vector2 (0, 400));
-			isOnGround = false;
-		} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
-					Input.GetKeyDown (KeyCode.RightShift)) && isOnGround) {
-			// flip the character to the default layer so that it won't collide with any of the
-			// black or white tiles
-			gameObject.layer = 0;
-			gravityY = Physics2D.gravity.y;
-			Physics2D.gravity = new Vector2 (0, 0);
-			this.rotateCamera ();
+		if (particles) {
+			if (!particles.IsAlive () && isDead) {
+				particles.Stop ();
+				particles.Clear ();
+				Destroy (gameObject);
+			}
 		}
+			
+		if (!isDead) {
+			if (Input.GetKeyDown (KeyCode.Space) && isOnGround) {
+				rb.AddForce (cameraUpsideDown ? new Vector2 (0, -400) : new Vector2 (0, 400));
+				isOnGround = false;
+			} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
+			           Input.GetKeyDown (KeyCode.RightShift)) && isOnGround && canShift) {
+				// flip the character to the default layer so that it won't collide with any of the
+				// black or white tiles
+				gameObject.layer = 0;
+				gravityY = Physics2D.gravity.y;
+				Physics2D.gravity = new Vector2 (0, 0);
+				this.rotateCamera ();
+			}
 
-		transform.Translate (Vector2.right * Input.GetAxis ("Horizontal") * Time.deltaTime * speed);
+			transform.Translate (Vector2.right * Input.GetAxis ("Horizontal") * Time.deltaTime * speed);
+		}
 	}
 	
 	void OnCollisionStay2D(Collision2D other) {
 		if(other.gameObject.tag == "Ground") {
 			isOnGround = true;
 		}
+
+		if (other.gameObject.layer == 8 || other.gameObject.layer == 9) {
+			canShift = true;
+		}
 	}
 
 	void OnCollisionEnter2D(Collision2D other) {
 		if(other.gameObject.tag == "Deadly") {
-			Destroy (gameObject);
+			isDead = true;
+			gameObject.GetComponent<SpriteRenderer> ().enabled = false;
+			particles.enableEmission = true;
+			particles.Play ();
 		}
 	}
 
 	void OnCollisionExit2D(Collision2D other) {
 		if(other.gameObject.tag == "Ground") {
 			isOnGround = false;
+		}
+
+		if (other.gameObject.layer == 8 || other.gameObject.layer == 9) {
+			canShift = false;
 		}
 	}
 
