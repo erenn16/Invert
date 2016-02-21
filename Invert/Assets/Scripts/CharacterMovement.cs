@@ -51,6 +51,11 @@ public class CharacterMovement : MonoBehaviour {
 				this.rotateCamera ();
 			}
 
+			if (Input.GetAxis ("Horizontal") > 0) {
+				gameObject.GetComponent<SpriteRenderer> ().flipX = false;
+			} else if (Input.GetAxis("Horizontal") < 0) {
+				gameObject.GetComponent<SpriteRenderer> ().flipX = true;
+			}
 			transform.Translate (Vector2.right * Input.GetAxis ("Horizontal") * Time.deltaTime * speed);
 		}
 	}
