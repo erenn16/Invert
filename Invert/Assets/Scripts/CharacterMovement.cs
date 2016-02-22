@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class CharacterMovement : MonoBehaviour {
 	public Camera camera;
@@ -34,6 +35,7 @@ public class CharacterMovement : MonoBehaviour {
 				particles.Stop ();
 				particles.Clear ();
 				Destroy (gameObject);
+				SceneManager.LoadScene ("MovementTest");
 			}
 		}
 			
@@ -122,6 +124,11 @@ public class CharacterMovement : MonoBehaviour {
 			cameraUpsideDown = !cameraUpsideDown;
 			gameObject.layer = cameraUpsideDown ? 8 : 9;	
 			Physics2D.gravity = new Vector2 (0, -1.0f * gravityY);
+			if (gameObject.layer == 8) {
+				gameObject.GetComponent<SpriteRenderer> ().color = Color.white; 
+			} else if (gameObject.layer == 9) {
+				gameObject.GetComponent<SpriteRenderer> ().color = Color.black; 
+			}
 		}
 	}
 }
