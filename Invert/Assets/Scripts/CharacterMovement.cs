@@ -34,8 +34,8 @@ public class CharacterMovement : MonoBehaviour {
 			if (!particles.IsAlive () && isDead) {
 				particles.Stop ();
 				particles.Clear ();
-				Destroy (gameObject);
 				SceneManager.LoadScene ("MovementTest");
+				Physics2D.gravity = new Vector2 (0, -9.81f);
 			}
 		}
 			
@@ -76,7 +76,6 @@ public class CharacterMovement : MonoBehaviour {
 		if(other.gameObject.tag == "Deadly") {
 			isDead = true;
 			gameObject.GetComponent<SpriteRenderer> ().enabled = false;
-			particles.enableEmission = true;
 			particles.Play ();
 		}
 	}
@@ -88,6 +87,13 @@ public class CharacterMovement : MonoBehaviour {
 
 		if (other.gameObject.layer == 8 || other.gameObject.layer == 9) {
 			canShift = false;
+		}
+	}
+
+	void OnTriggerEnter2D(Collider2D other) {
+		if (other.gameObject.tag == "Door") {
+			SceneManager.LoadScene ("MovementTest");
+			Physics2D.gravity = new Vector2 (0, -9.81f);
 		}
 	}
 
@@ -121,8 +127,10 @@ public class CharacterMovement : MonoBehaviour {
 			(cameraUpsideDown && currentCameraRotation.z > targetCameraRotation.z)) {
 			StartCoroutine (shiftRotationAnimation ());
 		} else {
+			particles.transform.eulerAngles = gameObject.transform.eulerAngles;
 			cameraUpsideDown = !cameraUpsideDown;
-			gameObject.layer = cameraUpsideDown ? 8 : 9;	
+			gameObject.layer = cameraUpsideDown ? 8 : 9;
+			particles.gravityModifier = -1.0f * particles.gravityModifier;
 			Physics2D.gravity = new Vector2 (0, -1.0f * gravityY);
 			if (gameObject.layer == 8) {
 				gameObject.GetComponent<SpriteRenderer> ().color = Color.white; 

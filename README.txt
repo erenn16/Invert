@@ -1,11 +1,11 @@
-PARTICLE EFFECTS - ASSIGNMENT 4
+INDIVIDUAL GAME MILESTONES 1
 
-Game controls are A/Left and D/Right for movement.  Use Space to jump and Shift to invert to the other color layers.  To activate the particle effect, move the character to collide with the spikes.
+Game controls are A/Left and D/Right for movement.  Use Space to jump and Shift to invert to the other color layers.  You can kill yourself by moving the character to collide with the spikes.
+
+So the basic character movement is done, with the horizontal control, jumping and shifting.  When the character collides with the spikes in the level (or anything else labeled "Deadly"), they will die and have a red particle effect start before restarting the scene.  There is a bug that I've noticed where if you shift the character and run into the spikes, the particle effect doesn't seem to play, and I'm currently working out why that is.  Another known issue is that since I'm using square prefabs to build a level, there are issues with collision where the character can stand on a wall because of Unity's collision detection.  There is a way to solve this, but it involves custom making each wall and ground piece for each level, which would make the level development process that much longer.
+
+I haven't fully designed any levels yet even though it was mentioned in my milestone.  I have a few ideas running in my head for how I want the first few levels.  Level building with my current setup of the building blocks as prefabs would make new level creation really easy.
+
+That's about it for what I have done for this milestone, which is about what I expected I would have done according to my design document.
 
 Character design by Courtney Toder.
-
-I am using the particle effect system provided by Unity and played with the settings to test the different uses.  In the game here, I added a gravity scale and upped the initial velocity so I would get the parabolic effect and upped the number of particles to 200 or so.  There doesn't seem to be any lag or crashing when I up the particles to an enormous number like 300,000,000.  I tried out some different materials to find the best effect and decided on the default Diffuse setting.  The particle system seems to be really good for Unity and doesn't lag or crash the system as far as I can tell by trying to max out the different settings.
-
-Though there is a weird bit where when I simulate the effect while not running the game I can see more particles, but if I have the effect during the game running, there seems to be less.
-
-All code that activates/deactivates the particle effect is in CharacterMovement.cs
