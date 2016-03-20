@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 public class CharacterMovement : MonoBehaviour {
 	public Camera camera;
 
-	private float speed = 5.0f;
+	private float speed = 7.0f;
 	private Rigidbody2D rb;
 	private bool isOnGround = false;
 	private bool canShift = false;
@@ -34,14 +34,14 @@ public class CharacterMovement : MonoBehaviour {
 			if (!particles.IsAlive () && isDead) {
 				particles.Stop ();
 				particles.Clear ();
-				SceneManager.LoadScene ("MovementTest");
+				Application.LoadLevel (Application.loadedLevel);
 				Physics2D.gravity = new Vector2 (0, -9.81f);
 			}
 		}
 			
 		if (!isDead) {
 			if (Input.GetKeyDown (KeyCode.Space) && isOnGround) {
-				rb.AddForce (cameraUpsideDown ? new Vector2 (0, -400) : new Vector2 (0, 400));
+				rb.AddForce (cameraUpsideDown ? new Vector2 (0, -500) : new Vector2 (0, 500));
 				isOnGround = false;
 			} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
 			           Input.GetKeyDown (KeyCode.RightShift)) && isOnGround && canShift) {
