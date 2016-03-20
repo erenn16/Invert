@@ -91,8 +91,8 @@ public class CharacterMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		if (other.gameObject.tag == "Door") {
-			SceneManager.LoadScene ("MovementTest");
+		if (other.gameObject.tag == "Door" && isOnGround) {
+			SceneManager.LoadScene (other.GetComponent<NextRoom> ().getNextRoom ());
 			Physics2D.gravity = new Vector2 (0, -9.81f);
 		}
 	}
