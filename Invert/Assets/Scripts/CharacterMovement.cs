@@ -21,6 +21,10 @@ public class CharacterMovement : MonoBehaviour {
 	private bool cameraUpsideDown = false;
 	private ParticleSystem particles;
 	private bool isDead = false;
+	private bool movingLeft = false;
+	private bool movingRight = false;
+	private int shiftTriggers = 0;
+	private int jumpTriggers = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -40,25 +44,51 @@ public class CharacterMovement : MonoBehaviour {
 		}
 			
 		if (!isDead) {
-			if (Input.GetKeyDown (KeyCode.Space) && isOnGround) {
+			if (jumpTriggers > 0) {
+				jumpTriggers--;
 				rb.AddForce (cameraUpsideDown ? new Vector2 (0, -500) : new Vector2 (0, 500));
 				isOnGround = false;
-			} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
-			           Input.GetKeyDown (KeyCode.RightShift)) && isOnGround && canShift) {
+			} else if (shiftTriggers > 0) {
 				// flip the character to the default layer so that it won't collide with any of the
 				// black or white tiles
+				shiftTriggers--;
 				gameObject.layer = 0;
 				gravityY = Physics2D.gravity.y;
 				Physics2D.gravity = new Vector2 (0, 0);
 				this.rotateCamera ();
 			}
 
-			if (Input.GetAxis ("Horizontal") > 0) {
+			if (movingRight) {
 				gameObject.GetComponent<SpriteRenderer> ().flipX = false;
-			} else if (Input.GetAxis("Horizontal") < 0) {
+			} else if (movingLeft) {
 				gameObject.GetComponent<SpriteRenderer> ().flipX = true;
 			}
-			transform.Translate (Vector2.right * Input.GetAxis ("Horizontal") * Time.deltaTime * speed);
+			float move = movingLeft ? -1.0f : (movingRight ? 1.0f : 0.0f);
+			transform.Translate (Vector2.right * move * Time.deltaTime * speed);
+		}
+	}
+
+	// trigger moving left from the buttons script
+	public void isMovingLeft(bool left) {
+		movingLeft = left;
+	}
+
+	// trigger moving right from the buttons script
+	public void isMovingRight(bool right) {
+		movingRight = right;
+	}
+
+	// trigger a jump from the buttons script
+	public void triggerJump() {
+		if (isOnGround) {
+			jumpTriggers = 1;
+		}
+	}
+
+	// trigger a shift from the buttons script
+	public void triggerShift() {
+		if (isOnGround && canShift) {
+			shiftTriggers = 1;
 		}
 	}
 	
