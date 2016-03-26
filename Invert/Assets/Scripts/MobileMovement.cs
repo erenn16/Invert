@@ -9,6 +9,11 @@ public class MobileMovement : MonoBehaviour, IPointerDownHandler, IPointerUpHand
 	public string buttonFunction;
 
 	public void OnPointerDown(PointerEventData eventData) {
+
+		if (buttonFunction == "quit") {
+			Application.Quit ();
+		}
+
 		if (buttonFunction == "moveLeft") {
 			character.isMovingLeft (true);
 			character.isMovingRight (false);

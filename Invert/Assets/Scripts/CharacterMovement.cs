@@ -121,12 +121,10 @@ public class CharacterMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log ("Triggered: " + other.gameObject.tag);
 		if (other.gameObject.tag == "Door" && isOnGround) {
 			SceneManager.LoadScene (other.GetComponent<NextRoom> ().getNextRoom ());
 			Physics2D.gravity = new Vector2 (0, -9.81f);
 		} else if (other.gameObject.tag == "Key") {
-			Debug.Log ("hit a key");
 			other.GetComponent<MoveBarrier> ().rotateBarrier ();
 		}
 	}
