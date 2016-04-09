@@ -7,6 +7,7 @@ public class CharacterMovement : MonoBehaviour {
 
 	private float speed = 7.0f;
 	private Rigidbody2D rb;
+	private Animator anim;
 	private bool isOnGround = false;
 	private bool canShift = false;
 
@@ -26,10 +27,12 @@ public class CharacterMovement : MonoBehaviour {
 	void Start () {
 		rb = GetComponent<Rigidbody2D> ();
 		particles = GetComponentInChildren<ParticleSystem> ();
+		anim = GetComponent<Animator> ();
 	}
 
 	// Update is called once per frame
 	void Update () {
+
 		if (particles) {
 			if (!particles.IsAlive () && isDead) {
 				particles.Stop ();
@@ -43,6 +46,7 @@ public class CharacterMovement : MonoBehaviour {
 			if (Input.GetKeyDown (KeyCode.Space) && isOnGround) {
 				rb.AddForce (cameraUpsideDown ? new Vector2 (0, -500) : new Vector2 (0, 500));
 				isOnGround = false;
+				anim.SetTrigger ("Jump");
 			} else if ((Input.GetKeyDown (KeyCode.LeftShift) ||
 			           Input.GetKeyDown (KeyCode.RightShift)) && isOnGround && canShift) {
 				// flip the character to the default layer so that it won't collide with any of the
@@ -59,6 +63,8 @@ public class CharacterMovement : MonoBehaviour {
 				gameObject.GetComponent<SpriteRenderer> ().flipX = true;
 			}
 			transform.Translate (Vector2.right * Input.GetAxis ("Horizontal") * Time.deltaTime * speed);
+			anim.SetFloat ("running", Mathf.Abs(Input.GetAxis ("Horizontal")));
+			anim.SetBool ("isFalling", !isOnGround);
 		}
 	}
 	
@@ -91,14 +97,20 @@ public class CharacterMovement : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D(Collider2D other) {
-		Debug.Log ("Triggered: " + other.gameObject.tag);
 		if (other.gameObject.tag == "Door" && isOnGround) {
-			SceneManager.LoadScene (other.GetComponent<NextRoom> ().getNextRoom ());
-			Physics2D.gravity = new Vector2 (0, -9.81f);
+			StartCoroutine (Win (other.GetComponent<NextRoom> ().getNextRoom ()));
 		} else if (other.gameObject.tag == "Key") {
-			Debug.Log ("hit a key");
 			other.GetComponent<MoveBarrier> ().rotateBarrier ();
 		}
+	}
+		
+	IEnumerator Win(string nextRoom) {
+		anim.SetTrigger ("Win");
+		while(!anim.GetCurrentAnimatorStateInfo(0).IsName("Win")) {
+			yield return null;
+		}
+		SceneManager.LoadScene (nextRoom);
+		Physics2D.gravity = new Vector2 (0, -9.81f);
 	}
 
 	void rotateCamera() {
