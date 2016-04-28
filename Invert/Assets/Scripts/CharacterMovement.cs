@@ -4,6 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class CharacterMovement : MonoBehaviour {
 	public Camera camera;
+	public GameObject rotateCanvas;
 
 	private float speed = 7.0f;
 	private Rigidbody2D rb;
@@ -109,6 +110,10 @@ public class CharacterMovement : MonoBehaviour {
 		while(!anim.GetCurrentAnimatorStateInfo(0).IsName("Win")) {
 			yield return null;
 		}
+		if (nextRoom == "Quit") {
+			Application.Quit ();
+			nextRoom = "Title";
+		}
 		SceneManager.LoadScene (nextRoom);
 		Physics2D.gravity = new Vector2 (0, -9.81f);
 	}
@@ -134,6 +139,7 @@ public class CharacterMovement : MonoBehaviour {
 		currentRotation.y += cameraUpsideDown ? (-1.0f * rotationStep) : rotationStep;
 
 		camera.transform.eulerAngles = currentCameraRotation;
+		rotateCanvas.transform.eulerAngles = (-1.0f) * currentCameraRotation;
 		gameObject.transform.eulerAngles = currentRotation;
 		yield return new WaitForSeconds (0);
 
